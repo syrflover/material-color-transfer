@@ -9,16 +9,16 @@ Unity 2022.3 버전에서 작동함
 <table>
     <tr>
         <td align="center">
-            <img src="images/1.png" width="300px" />
+            <img src=".images/1.png" width="300px" />
         </td>
         <td align="center">
-            <img src="images/2.png" width="300px" />
+            <img src=".images/2.png" width="300px" />
         </td>
         <td align="center">
-            <img src="images/3.png" width="300px" />
+            <img src=".images/3.png" width="300px" />
         </td>
         <td align="center">
-            <img src="images/4.png" width="300px" />
+            <img src=".images/4.png" width="300px" />
         </td>
     </tr>
 </table>
@@ -26,10 +26,10 @@ Unity 2022.3 버전에서 작동함
 <table>
     <tr>
         <td align="center">
-            <img src="images/before.png" width="300px" />
+            <img src=".images/before.png" width="300px" />
         </td>
         <td align="center">
-            <img src="images/after.png" width="300px" />
+            <img src=".images/after.png" width="300px" />
         </td>
     </tr>
     <tr>
@@ -41,13 +41,13 @@ Unity 2022.3 버전에서 작동함
 ## 설치
 
 1. 상단 메뉴에서 `Window - Package Manager`를 선택합니다.
-   <img src="images/5.png" width="400px" />
+   <img src=".images/5.png" width="400px" />
 
 2. 왼쪽 상단에 `+` 버튼을 누르고, `Add package from git URL`을 선택합니다.
-   <img src="images/6.png" width="700px" />
+   <img src=".images/6.png" width="700px" />
 
 3. 입력창에 `https://github.com/syrflover/material-hue-transfer.git` 입력 후 `Add`를 클릭합니다.
-   <img src="images/7.png" width="700px" />
+   <img src=".images/7.png" width="700px" />
 
 ## 사용법
 
