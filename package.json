@@ -1,0 +1,10 @@
+{
+    "name": "com.syrlee.material-hue-transfer",
+    "version": "0.1.0",
+    "displayName": "Material Hue Transfer",
+    "author": {
+        "name": "syrlee",
+        "email": "user@syrflover.co"
+    },
+    "unity": "2022.3"
+}

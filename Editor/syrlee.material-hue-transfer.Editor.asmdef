@@ -1,0 +1,16 @@
+{
+    "name": "MaterialHueTransfer.Editor",
+    "rootNamespace": "MaterialHueTransfer.Editor",
+    "includePlatforms": [
+        "Editor"
+    ],
+    "references": [
+        "UnityEditor.CoreModule",
+        "UnityEngine.CoreModule",
+        "UnityEngine.UIElementsModule",
+        "UnityEditor.UIElementsModule"
+    ],
+    "autoReferenced": true,
+    "allowUnsafeCode": false,
+    "defineConstraints": []
+}
