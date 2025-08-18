@@ -77,7 +77,7 @@ StyleCopReport.xml
 *_p.c
 *_h.h
 *.ilk
-*.meta
+# *.meta
 *.obj
 *.iobj
 *.pch
@@ -458,6 +458,14 @@ Temporary Items
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 
+/[Ll]ibrary.meta
+/[Tt]emp.meta
+/[Oo]bj.meta
+/[Bb]uild.meta
+/[Bb]uilds.meta
+/[Ll]ogs.meta
+/[Uu]ser[Ss]ettings.meta
+
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/
@@ -485,6 +493,9 @@ ExportedObj/
 *.booproj
 *.svd
 *.mdb
+
+*.sln.meta
+*.csproj.meta
 
 # Unity3D generated meta files
 *.pidb.meta
