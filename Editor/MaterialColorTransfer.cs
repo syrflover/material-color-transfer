@@ -2,13 +2,14 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
+using System.Linq;
 
-public class MaterialHueTransfer
+public class MaterialColorTransfer
 {
-    const string MENU_PATH = "Assets/Material Hue Transfer";
+    const string MENU_PATH = "Assets/Material Color Transfer";
 
     [MenuItem(MENU_PATH, false)]
-    static void TransferHue()
+    static void TransferColor()
     {
         TransferWindow.ShowWindow();
     }
@@ -28,13 +29,29 @@ public class MaterialHueTransfer
     }
 }
 
+enum TransferMode
+{
+    Hue,
+    Saturation
+}
+
 public class TransferWindow : EditorWindow
 {
     public static void ShowWindow()
     {
-        GetWindow<TransferWindow>("Material Hue Transfer");
+        GetWindow<TransferWindow>("Material Color Transfer");
     }
 
+
+    private TransferMode transferMode = TransferMode.Hue;
+
+    private Color OriginalShadowColor1;
+    private Color OriginalShadowColor2;
+    private Color OriginalShadowColor3;
+    private Color OriginalShadowBorderColor;
+    private Color OriginalRimShadeColor;
+
+    private DropdownField TransferModeField;
 
     private ColorField BaseColorField;
     private ColorField ShadowColor1Field;
@@ -51,13 +68,21 @@ public class TransferWindow : EditorWindow
         var assetPath = AssetDatabase.GUIDToAssetPath(assetGUID);
         var material = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
 
+        TransferModeField = new DropdownField("Transfer Mode", new[] { "Hue", "Saturation" }.ToList(), (int)transferMode);
+
         BaseColorField = new ColorField("Base Color") { value = Color.white };
 
-        ShadowColor1Field = new ColorField("Shadow 1") { value = material.GetColor("_ShadowColor"), showEyeDropper = false };
-        ShadowColor2Field = new ColorField("Shadow 2") { value = material.GetColor("_Shadow2ndColor"), showEyeDropper = false };
-        ShadowColor3Field = new ColorField("Shadow 3") { value = material.GetColor("_Shadow3rdColor"), showEyeDropper = false };
-        ShadowBorderColorField = new ColorField("Shadow Border") { value = material.GetColor("_ShadowBorderColor"), showEyeDropper = false };
-        RimShadeColorField = new ColorField("Rim Shade") { value = material.GetColor("_RimShadeColor"), showEyeDropper = false };
+        OriginalShadowColor1 = material.GetColor("_ShadowColor");
+        OriginalShadowColor2 = material.GetColor("_Shadow2ndColor");
+        OriginalShadowColor3 = material.GetColor("_Shadow3rdColor");
+        OriginalShadowBorderColor = material.GetColor("_ShadowBorderColor");
+        OriginalRimShadeColor = material.GetColor("_RimShadeColor");
+
+        ShadowColor1Field = new ColorField("Shadow 1") { value = OriginalShadowColor1, showEyeDropper = false };
+        ShadowColor2Field = new ColorField("Shadow 2") { value = OriginalShadowColor2, showEyeDropper = false };
+        ShadowColor3Field = new ColorField("Shadow 3") { value = OriginalShadowColor3, showEyeDropper = false };
+        ShadowBorderColorField = new ColorField("Shadow Border") { value = OriginalShadowBorderColor, showEyeDropper = false };
+        RimShadeColorField = new ColorField("Rim Shade") { value = OriginalRimShadeColor, showEyeDropper = false };
 
         ShadowColor1Field.SetEnabled(false);
         ShadowColor1Field.style.opacity = 1f;
@@ -77,11 +102,11 @@ public class TransferWindow : EditorWindow
 
         root.Add(new TextField("Material Path") { value = assetPath, isReadOnly = true });
         root.Add(CreateSpacer(8));
+        root.Add(TransferModeField);
+        root.Add(CreateSpacer(8));
         root.Add(BaseColorField);
         root.Add(CreateSpacer(8));
-        root.Add(new HelpBox("Does not work with grayscale colors.", HelpBoxMessageType.Warning));
-        root.Add(CreateSpacer(12));
-        root.Add(new Label("Transferred Colors"));
+        root.Add(new Label("Preview"));
         root.Add(CreateSpacer(8));
         root.Add(ShadowColor1Field);
         root.Add(CreateSpacer(8));
@@ -95,6 +120,8 @@ public class TransferWindow : EditorWindow
         root.Add(CreateSpacer(12));
         root.Add(new Button(() =>
         {
+            SyncDerivedFields(BaseColorField.value, transferMode);
+
             material.SetColor("_ShadowColor", ShadowColor1Field.value);
             material.SetColor("_Shadow2ndColor", ShadowColor2Field.value);
             material.SetColor("_Shadow3rdColor", ShadowColor3Field.value);
@@ -105,25 +132,47 @@ public class TransferWindow : EditorWindow
         })
         { text = "Apply" });
 
-        SyncDerivedFields(BaseColorField.value);
+        SyncDerivedFields(BaseColorField.value, transferMode);
 
         BaseColorField.RegisterValueChangedCallback(evt =>
         {
-            SyncDerivedFields(evt.newValue);
+            SyncDerivedFields(evt.newValue, transferMode);
         });
+
+        TransferModeField.RegisterValueChangedCallback(evt =>
+        {
+            // Debug.Log($"Transfer mode changed to: {evt.newValue}");
+
+            if (evt.newValue == "Hue")
+            {
+                transferMode = TransferMode.Hue;
+            }
+            else if (evt.newValue == "Saturation")
+            {
+                transferMode = TransferMode.Saturation;
+            }
+
+            RevertToOriginal();
+
+            SyncDerivedFields(BaseColorField.value, transferMode);
+        });
+
     }
 
-    private void SyncDerivedFields(Color c)
+    private void RevertToOriginal()
+    {
+        ShadowColor1Field.value = OriginalShadowColor1;
+        ShadowColor2Field.value = OriginalShadowColor2;
+        ShadowColor3Field.value = OriginalShadowColor3;
+        ShadowBorderColorField.value = OriginalShadowBorderColor;
+        RimShadeColorField.value = OriginalRimShadeColor;
+    }
+
+    private void SyncDerivedFields(Color c, TransferMode transferMode)
     {
         BaseColorField.value = c;
 
         var HSVBaseColor = HSVColor.FromRGB(BaseColorField.value);
-
-        if (float.IsNaN(HSVBaseColor.hue))
-        {
-            Debug.Log("Base color is grayscale, cannot transfer hue.");
-            return;
-        }
 
         var HSVShadowColor1 = HSVColor.FromRGB(ShadowColor1Field.value);
         var HSVShadowColor2 = HSVColor.FromRGB(ShadowColor2Field.value);
@@ -131,11 +180,23 @@ public class TransferWindow : EditorWindow
         var HSVShadowBorderColor = HSVColor.FromRGB(ShadowBorderColorField.value);
         var HSVRimShadeColor = HSVColor.FromRGB(RimShadeColorField.value);
 
-        HSVShadowColor1.hue = HSVBaseColor.hue;
-        HSVShadowColor2.hue = HSVBaseColor.hue;
-        HSVShadowColor3.hue = HSVBaseColor.hue;
-        HSVShadowBorderColor.hue = HSVBaseColor.hue;
-        HSVRimShadeColor.hue = HSVBaseColor.hue;
+        if (transferMode == TransferMode.Hue)
+        {
+            HSVShadowColor1.hue = HSVBaseColor.hue;
+            HSVShadowColor2.hue = HSVBaseColor.hue;
+            HSVShadowColor3.hue = HSVBaseColor.hue;
+            HSVShadowBorderColor.hue = HSVBaseColor.hue;
+            HSVRimShadeColor.hue = HSVBaseColor.hue;
+        }
+        else if (transferMode == TransferMode.Saturation)
+        {
+            Debug.Log($"HSVBaseColor.saturation: {HSVBaseColor.saturation}");
+            HSVShadowColor1.saturation = HSVBaseColor.saturation;
+            HSVShadowColor2.saturation = HSVBaseColor.saturation;
+            HSVShadowColor3.saturation = HSVBaseColor.saturation;
+            HSVShadowBorderColor.saturation = HSVBaseColor.saturation;
+            HSVRimShadeColor.saturation = HSVBaseColor.saturation;
+        }
 
         ShadowColor1Field.value = HSVShadowColor1.ToRGB();
         ShadowColor2Field.value = HSVShadowColor2.ToRGB();
@@ -189,7 +250,7 @@ struct HSVColor
 
         if (delta == 0)
         {
-            hue = float.NaN;
+            hue = 0;
         }
         else if (max == r)
         {
@@ -214,11 +275,6 @@ struct HSVColor
         if (value == 0)
         {
             return Color.black;
-        }
-
-        if (saturation == 0)
-        {
-            return new Color(value, value, value);
         }
 
         float h = hue / 60f;

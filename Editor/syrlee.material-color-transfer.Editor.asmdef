@@ -1,6 +1,6 @@
 {
-    "name": "MaterialHueTransfer.Editor",
-    "rootNamespace": "MaterialHueTransfer.Editor",
+    "name": "MaterialColorTransfer.Editor",
+    "rootNamespace": "MaterialColorTransfer.Editor",
     "includePlatforms": [
         "Editor"
     ],

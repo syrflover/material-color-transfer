@@ -1,7 +1,7 @@
 {
-    "name": "com.syrlee.material-hue-transfer",
+    "name": "com.syrlee.material-color-transfer",
     "version": "0.1.0",
-    "displayName": "Material Hue Transfer",
+    "displayName": "Material Color Transfer",
     "author": {
         "name": "syrlee",
         "email": "user@syrflover.co"

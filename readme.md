@@ -1,6 +1,6 @@
-# Material Hue Transfer
+# Material Color Transfer
 
-Unity 에디터에서 선택한 머티리얼의 그림자 및 RimShade 색상을, 입력한 기준 색상의 색조(Hue)로 일괄 변환해주는 에디터 스크립트입니다.
+Unity 에디터에서 선택한 머티리얼의 그림자 및 RimShade 색상을, 입력한 기준 색상의 색조(Hue) 또는 채도(Saturation)로 일괄 변환해주는 에디터 스크립트입니다.
 
 Unity 2022.3 버전에서 작동함
 
@@ -52,6 +52,6 @@ Unity 2022.3 버전에서 작동함
 ## 사용법
 
 1. 프로젝트에서 수정할 머티리얼을 선택합니다.
-2. 우클릭 메뉴에서 `Material Hue Transfer`를 클릭합니다.
+2. 우클릭 메뉴에서 `Material Color Transfer`를 클릭합니다.
 3. 에디터 윈도우에서 Base Color를 조정하면, 머티리얼의 그림자 및 RimShade 색상의 색조(Hue) 변화가 미리보기에 반영됩니다.
 4. `Apply` 버튼을 클릭하여 변경 사항을 머티리얼에 적용합니다.
