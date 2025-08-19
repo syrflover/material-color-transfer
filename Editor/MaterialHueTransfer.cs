@@ -10,16 +10,12 @@ public class MaterialHueTransfer
     [MenuItem(MENU_PATH, false)]
     static void TransferHue()
     {
-        Debug.Log("aa");
-
         TransferWindow.ShowWindow();
     }
 
     [MenuItem(MENU_PATH, true)]
     static bool Validate()
     {
-        Debug.Log("validate");
-
         if (Selection.assetGUIDs == null || Selection.assetGUIDs.Length != 1)
         {
             return false;
@@ -262,6 +258,7 @@ struct HSVColor
         }
         else
         {
+            Debug.LogError($"Invalid hue value: {hue}. Returning white color.");
             return Color.white;
         }
     }
