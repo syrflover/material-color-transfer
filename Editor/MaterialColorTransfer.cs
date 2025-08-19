@@ -190,7 +190,7 @@ public class TransferWindow : EditorWindow
         }
         else if (transferMode == TransferMode.Saturation)
         {
-            Debug.Log($"HSVBaseColor.saturation: {HSVBaseColor.saturation}");
+            // Debug.Log($"HSVBaseColor.saturation: {HSVBaseColor.saturation}");
             HSVShadowColor1.saturation = HSVBaseColor.saturation;
             HSVShadowColor2.saturation = HSVBaseColor.saturation;
             HSVShadowColor3.saturation = HSVBaseColor.saturation;
@@ -274,7 +274,7 @@ struct HSVColor
     {
         if (value == 0)
         {
-            return Color.black;
+            return new Color(0f, 0f, 0f, alpha);
         }
 
         float h = hue / 60f;
@@ -315,7 +315,7 @@ struct HSVColor
         else
         {
             Debug.LogError($"Invalid hue value: {hue}. Returning white color.");
-            return Color.white;
+            return new Color(1f, 1f, 1f, alpha);
         }
     }
 }
