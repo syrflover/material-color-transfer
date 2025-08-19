@@ -46,7 +46,7 @@ Unity 2022.3 버전에서 작동함
 2. 왼쪽 상단에 `+` 버튼을 누르고, `Add package from git URL`을 선택합니다.
    <img src=".images/6.png" width="700px" />
 
-3. 입력창에 `https://github.com/syrflover/material-hue-transfer.git` 입력 후 `Add`를 클릭합니다.
+3. 입력창에 `https://github.com/syrflover/material-color-transfer.git` 입력 후 `Add`를 클릭합니다.
    <img src=".images/7.png" width="700px" />
 
 ## 사용법
