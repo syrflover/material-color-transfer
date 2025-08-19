@@ -113,7 +113,7 @@ public class TransferWindow : EditorWindow
         });
     }
 
-    void SyncDerivedFields(Color c)
+    private void SyncDerivedFields(Color c)
     {
         BaseColorField.value = c;
 
