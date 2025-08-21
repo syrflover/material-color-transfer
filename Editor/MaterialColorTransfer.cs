@@ -243,10 +243,13 @@ public class TransferWindow : EditorWindow
 
         colorField.SetEnabled(false);
 
+        var hexColorCodeField = new TextField() { value = "#" + ColorUtility.ToHtmlStringRGB(originalColor), isReadOnly = true };
+
         var row = new VisualElement();
 
         row.Add(toggle);
         row.Add(colorField);
+        row.Add(hexColorCodeField);
 
         row.style.flexDirection = FlexDirection.Row;
 
