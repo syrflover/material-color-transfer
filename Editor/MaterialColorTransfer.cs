@@ -54,11 +54,11 @@ public class TransferWindow : EditorWindow
     private DropdownField TransferModeField;
 
     private ColorField BaseColorField;
-    private ColorField ShadowColor1Field;
-    private ColorField ShadowColor2Field;
-    private ColorField ShadowColor3Field;
-    private ColorField ShadowBorderColorField;
-    private ColorField RimShadeColorField;
+    private VisualElement ShadowColor1Field;
+    private VisualElement ShadowColor2Field;
+    private VisualElement ShadowColor3Field;
+    private VisualElement ShadowBorderColorField;
+    private VisualElement RimShadeColorField;
 
     public void CreateGUI()
     {
@@ -78,27 +78,11 @@ public class TransferWindow : EditorWindow
         OriginalShadowBorderColor = material.GetColor("_ShadowBorderColor");
         OriginalRimShadeColor = material.GetColor("_RimShadeColor");
 
-        ShadowColor1Field = new ColorField("Shadow 1") { value = OriginalShadowColor1, showEyeDropper = false };
-        ShadowColor2Field = new ColorField("Shadow 2") { value = OriginalShadowColor2, showEyeDropper = false };
-        ShadowColor3Field = new ColorField("Shadow 3") { value = OriginalShadowColor3, showEyeDropper = false };
-        ShadowBorderColorField = new ColorField("Shadow Border") { value = OriginalShadowBorderColor, showEyeDropper = false };
-        RimShadeColorField = new ColorField("Rim Shade") { value = OriginalRimShadeColor, showEyeDropper = false };
-
-        ShadowColor1Field.SetEnabled(false);
-        ShadowColor1Field.style.opacity = 1f;
-        ShadowColor1Field.style.color = new StyleColor(Color.white);
-        ShadowColor2Field.SetEnabled(false);
-        ShadowColor2Field.style.opacity = 1f;
-        ShadowColor2Field.style.color = new StyleColor(Color.white);
-        ShadowColor3Field.SetEnabled(false);
-        ShadowColor3Field.style.opacity = 1f;
-        ShadowColor3Field.style.color = new StyleColor(Color.white);
-        ShadowBorderColorField.SetEnabled(false);
-        ShadowBorderColorField.style.opacity = 1f;
-        ShadowBorderColorField.style.color = new StyleColor(Color.white);
-        RimShadeColorField.SetEnabled(false);
-        RimShadeColorField.style.opacity = 1f;
-        RimShadeColorField.style.color = new StyleColor(Color.white);
+        ShadowColor1Field = CreateTogglePreviewColorField("Shadow 1", OriginalShadowColor1, OriginalShadowColor1.a > 0 && material.GetFloat("_UseShadow") == 1);
+        ShadowColor2Field = CreateTogglePreviewColorField("Shadow 2", OriginalShadowColor2, OriginalShadowColor2.a > 0 && material.GetFloat("_UseShadow") == 1);
+        ShadowColor3Field = CreateTogglePreviewColorField("Shadow 3", OriginalShadowColor3, OriginalShadowColor3.a > 0 && material.GetFloat("_UseShadow") == 1);
+        ShadowBorderColorField = CreateTogglePreviewColorField("Shadow Border", OriginalShadowBorderColor, OriginalShadowBorderColor.a > 0 && material.GetFloat("_UseShadow") == 1);
+        RimShadeColorField = CreateTogglePreviewColorField("Rim Shade", OriginalRimShadeColor, OriginalRimShadeColor.a > 0 && material.GetFloat("_UseRimShade") == 1);
 
         root.Add(new TextField("Material Path") { value = assetPath, isReadOnly = true });
         root.Add(CreateSpacer(8));
@@ -122,17 +106,34 @@ public class TransferWindow : EditorWindow
         {
             SyncDerivedFields(BaseColorField.value, transferMode);
 
-            material.SetColor("_ShadowColor", ShadowColor1Field.value);
-            material.SetColor("_Shadow2ndColor", ShadowColor2Field.value);
-            material.SetColor("_Shadow3rdColor", ShadowColor3Field.value);
-            material.SetColor("_ShadowBorderColor", ShadowBorderColorField.value);
-            material.SetColor("_RimShadeColor", RimShadeColorField.value);
+            if (ShadowColor1Field.Q<Toggle>().value)
+            {
+                material.SetColor("_ShadowColor", ShadowColor1Field.Q<ColorField>().value);
+            }
+
+            if (ShadowColor2Field.Q<Toggle>().value)
+            {
+                material.SetColor("_Shadow2ndColor", ShadowColor2Field.Q<ColorField>().value);
+            }
+
+            if (ShadowColor3Field.Q<Toggle>().value)
+            {
+                material.SetColor("_Shadow3rdColor", ShadowColor3Field.Q<ColorField>().value);
+            }
+
+            if (ShadowBorderColorField.Q<Toggle>().value)
+            {
+                material.SetColor("_ShadowBorderColor", ShadowBorderColorField.Q<ColorField>().value);
+            }
+
+            if (RimShadeColorField.Q<Toggle>().value)
+            {
+                material.SetColor("_RimShadeColor", RimShadeColorField.Q<ColorField>().value);
+            }
 
             Close();
         })
         { text = "Apply" });
-
-        SyncDerivedFields(BaseColorField.value, transferMode);
 
         BaseColorField.RegisterValueChangedCallback(evt =>
         {
@@ -156,16 +157,15 @@ public class TransferWindow : EditorWindow
 
             SyncDerivedFields(BaseColorField.value, transferMode);
         });
-
     }
 
     private void RevertToOriginal()
     {
-        ShadowColor1Field.value = OriginalShadowColor1;
-        ShadowColor2Field.value = OriginalShadowColor2;
-        ShadowColor3Field.value = OriginalShadowColor3;
-        ShadowBorderColorField.value = OriginalShadowBorderColor;
-        RimShadeColorField.value = OriginalRimShadeColor;
+        ShadowColor1Field.Q<ColorField>().value = OriginalShadowColor1;
+        ShadowColor2Field.Q<ColorField>().value = OriginalShadowColor2;
+        ShadowColor3Field.Q<ColorField>().value = OriginalShadowColor3;
+        ShadowBorderColorField.Q<ColorField>().value = OriginalShadowBorderColor;
+        RimShadeColorField.Q<ColorField>().value = OriginalRimShadeColor;
     }
 
     private void SyncDerivedFields(Color c, TransferMode transferMode)
@@ -174,11 +174,11 @@ public class TransferWindow : EditorWindow
 
         var HSVBaseColor = HSVColor.FromRGB(BaseColorField.value);
 
-        var HSVShadowColor1 = HSVColor.FromRGB(ShadowColor1Field.value);
-        var HSVShadowColor2 = HSVColor.FromRGB(ShadowColor2Field.value);
-        var HSVShadowColor3 = HSVColor.FromRGB(ShadowColor3Field.value);
-        var HSVShadowBorderColor = HSVColor.FromRGB(ShadowBorderColorField.value);
-        var HSVRimShadeColor = HSVColor.FromRGB(RimShadeColorField.value);
+        var HSVShadowColor1 = HSVColor.FromRGB(ShadowColor1Field.Q<ColorField>().value);
+        var HSVShadowColor2 = HSVColor.FromRGB(ShadowColor2Field.Q<ColorField>().value);
+        var HSVShadowColor3 = HSVColor.FromRGB(ShadowColor3Field.Q<ColorField>().value);
+        var HSVShadowBorderColor = HSVColor.FromRGB(ShadowBorderColorField.Q<ColorField>().value);
+        var HSVRimShadeColor = HSVColor.FromRGB(RimShadeColorField.Q<ColorField>().value);
 
         if (transferMode == TransferMode.Hue)
         {
@@ -190,7 +190,6 @@ public class TransferWindow : EditorWindow
         }
         else if (transferMode == TransferMode.Saturation)
         {
-            // Debug.Log($"HSVBaseColor.saturation: {HSVBaseColor.saturation}");
             HSVShadowColor1.saturation = HSVBaseColor.saturation;
             HSVShadowColor2.saturation = HSVBaseColor.saturation;
             HSVShadowColor3.saturation = HSVBaseColor.saturation;
@@ -198,11 +197,30 @@ public class TransferWindow : EditorWindow
             HSVRimShadeColor.saturation = HSVBaseColor.saturation;
         }
 
-        ShadowColor1Field.value = HSVShadowColor1.ToRGB();
-        ShadowColor2Field.value = HSVShadowColor2.ToRGB();
-        ShadowColor3Field.value = HSVShadowColor3.ToRGB();
-        ShadowBorderColorField.value = HSVShadowBorderColor.ToRGB();
-        RimShadeColorField.value = HSVRimShadeColor.ToRGB();
+        if (ShadowColor1Field.Q<Toggle>().value)
+        {
+            ShadowColor1Field.Q<ColorField>().value = HSVShadowColor1.ToRGB();
+        }
+
+        if (ShadowColor2Field.Q<Toggle>().value)
+        {
+            ShadowColor2Field.Q<ColorField>().value = HSVShadowColor2.ToRGB();
+        }
+
+        if (ShadowColor3Field.Q<Toggle>().value)
+        {
+            ShadowColor3Field.Q<ColorField>().value = HSVShadowColor3.ToRGB();
+        }
+
+        if (ShadowBorderColorField.Q<Toggle>().value)
+        {
+            ShadowBorderColorField.Q<ColorField>().value = HSVShadowBorderColor.ToRGB();
+        }
+
+        if (RimShadeColorField.Q<Toggle>().value)
+        {
+            RimShadeColorField.Q<ColorField>().value = HSVRimShadeColor.ToRGB();
+        }
     }
 
     private VisualElement CreateSpacer(float height)
@@ -213,6 +231,39 @@ public class TransferWindow : EditorWindow
         spacer.style.flexShrink = 0;
         spacer.pickingMode = PickingMode.Ignore;
         return spacer;
+    }
+
+    private VisualElement CreateTogglePreviewColorField(string label, Color originalColor, bool enabled)
+    {
+        var toggle = new Toggle(label) { value = enabled };
+
+        toggle.SetEnabled(enabled);
+
+        var colorField = new ColorField() { value = originalColor, showEyeDropper = false };
+
+        colorField.SetEnabled(false);
+
+        var row = new VisualElement();
+
+        row.Add(toggle);
+        row.Add(colorField);
+
+        row.style.flexDirection = FlexDirection.Row;
+
+        toggle.RegisterValueChangedCallback(evt =>
+        {
+            if (evt.newValue)
+            {
+                SyncDerivedFields(BaseColorField.value, transferMode);
+            }
+            else
+            {
+                colorField.value = originalColor;
+            }
+
+        });
+
+        return row;
     }
 }
 
